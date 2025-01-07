@@ -8,6 +8,13 @@ from boto3 import client
 from dotenv import load_dotenv
 
 
+def connect_to_s3():
+    """Connects to S3."""
+    s3 = client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
+                aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    return s3
+
+
 def list_objects(s3_client, bucket_name: str) -> list[str]:
     """Returns a list of object names in a specific bucket."""
     objects = s3_client.list_objects(Bucket=bucket_name)['Contents']
@@ -53,15 +60,3 @@ def combine_csv(contents: list[str], output_file: str):
                 print(f"Deleted local file: {f"static_data/{file}"}")
 
     print(f"CSV files combined successfully: {f"static_data/{output_file}"}")
-
-
-if __name__ == '__main__':
-
-    load_dotenv()
-
-    s3 = client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
-    contents = list_objects(s3, ENV['MUSEUM_BUCKET'])
-    new_contents = check_objects(contents)
-    download_objects(s3, ENV['MUSEUM_BUCKET'], new_contents)
-    combine_csv(new_contents, 'lmnh_hist_data_full.csv')
