@@ -1,3 +1,12 @@
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS floor;
+DROP TABLE IF EXISTS exhibition;
+DROP TABLE IF EXISTS request;
+DROP TABLE IF EXISTS rating;
+DROP TABLE IF EXISTS request_interaction;
+DROP TABLE IF EXISTS rating_interaction;
+
+
 CREATE TABLE department (
     department_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     department_name VARCHAR(100) NOT NULL
@@ -25,7 +34,7 @@ CREATE TABLE request (
     request_value SMALLINT NOT NULL,
     request_description VARCHAR(100) NOT NULL,
     CONSTRAINT zero_or_one CHECK (
-        INT(request_value) == 0 OR INT(request_value) == 1)
+        request_value = 0 OR request_value = 1)
     )
 );
 
