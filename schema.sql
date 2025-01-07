@@ -52,3 +52,69 @@ CREATE TABLE rating_interaction (
     FOREIGN KEY (exhibition_id) REFERENCES exhibition(exhibition_id),
     FOREIGN KEY (rating_id) REFERENCES rating(rating_id)
 );
+
+
+INSERT INTO department 
+    (department_name)
+VALUES
+    ('Ecology'),
+    ('Zoology'),
+    ('Paleontology'),
+    ('Geology'),
+    ('Entomology')
+;
+
+INSERT INTO floor
+    (floor_name)
+VALUES
+    ('Vault'),
+    ('1'),
+    ('2'),
+    ('3')
+;
+
+INSERT INTO exhibition
+    (exhibition_name, 
+    exhibition_description, 
+    department_id, 
+    floor_id, 
+    exhibition_start_date,
+    public_id)
+VALUES
+    ('Adaptation', 
+    'How insect evolution has kept pace with an industrialised world.',
+    5,
+    1,
+    '2019-07-01',
+    'EXH_01'),
+    ('Thunder Lizards',
+    'How new research is making scientists rethink what dinosaurs really looked like.',
+    3,
+    2,
+    '2023-02-01',
+    'EXH_05'),
+    ('Our Polluted World',
+    'A hard-hitting exploration of humanity''s impact on the environment.',
+    1,
+    4,
+    '2021-05-12',
+    'EXH_04'),
+    ('Measureless to Man',
+    'An immersive 3D experience: delve deep into a previously-inaccessible cave system.',
+    4,
+    2,
+    '2021-08-23',
+    'EXH_00'),
+    ('The Crenshaw Collection',
+    'An exhibition of 18th Century watercolours, mostly focused on South American wildlife.',
+    2,
+    3,
+    '2021-03-03',
+    'EXH_02'),
+    ('Cetacean Sensations',
+    'Whales: from ancient myth to critically endangered.',
+    2,
+    2,
+    '2019-07-01',
+    'EXH_03')
+;
