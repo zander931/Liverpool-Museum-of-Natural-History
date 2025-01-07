@@ -17,18 +17,6 @@ CREATE TABLE floor (
     floor_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE exhibition (
-    exhibition_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    exhibition_name VARCHAR(100) NOT NULL,
-    exhibition_description TEXT NOT NULL,
-    department_id SMALLINT NOT NULL,
-    floor_id SMALLINT NOT NULL,
-    exhibition_start_date DATE DEFAULT CURRENT_DATE,
-    public_id TEXT UNIQUE NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES department(department_id),
-    FOREIGN KEY (floor_id) REFERENCES floor(floor_id)
-);
-
 CREATE TABLE request (
     request_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     request_value SMALLINT NOT NULL,
@@ -42,6 +30,18 @@ CREATE TABLE rating (
     rating_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     rating_value SMALLINT NOT NULL,
     rating_description VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE exhibition (
+    exhibition_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    exhibition_name VARCHAR(100) NOT NULL,
+    exhibition_description TEXT NOT NULL,
+    department_id SMALLINT NOT NULL,
+    floor_id SMALLINT NOT NULL,
+    exhibition_start_date DATE DEFAULT CURRENT_DATE,
+    public_id TEXT UNIQUE NOT NULL,
+    FOREIGN KEY (department_id) REFERENCES department(department_id),
+    FOREIGN KEY (floor_id) REFERENCES floor(floor_id)
 );
 
 CREATE TABLE request_interaction (
