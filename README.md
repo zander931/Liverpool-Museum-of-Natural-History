@@ -1,6 +1,7 @@
 # Museum Visitor Kiosk Pipeline
 
-#### This project aims to extract data from Liverpool Museum of Natural History, which include visitor satisfaction kiosk data as well as exhibition data. Then, a database is set up to hold this data, whilst ensuring scalability with new data as well as handling anomalies. The data should be moved to the database, from which analysis can be done on the data to discover trends and potential improvements with the aim of providing greater value to the Liverpool community and the wider public. 
+This project aims to extract data from the **Liverpool Museum of Natural History**, which includes transactional _visitor satisfaction kiosk data_ as well as master _exhibition data_.   
+A database is set up to hold this data, whilst ensuring scalability with new data as well as handling anomalies. The data should be moved to the database, from which analysis can be done on the data to discover trends and potential improvements with the aim of providing greater value to the Liverpool community and the wider public. 
 
 ## Files:
 
