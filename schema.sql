@@ -1,10 +1,10 @@
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS floor;
 DROP TABLE IF EXISTS exhibition;
-DROP TABLE IF EXISTS request;
-DROP TABLE IF EXISTS rating;
 DROP TABLE IF EXISTS request_interaction;
 DROP TABLE IF EXISTS rating_interaction;
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS floor;
+DROP TABLE IF EXISTS request;
+DROP TABLE IF EXISTS rating ;
 
 
 CREATE TABLE department (
@@ -34,7 +34,7 @@ CREATE TABLE request (
     request_value SMALLINT NOT NULL,
     request_description VARCHAR(100) NOT NULL,
     CONSTRAINT zero_or_one CHECK (
-        request_value = 0 OR request_value = 1)
+        request_value = 0 OR request_value = 1
     )
 );
 
