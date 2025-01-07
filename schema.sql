@@ -131,6 +131,23 @@ VALUES
     'EXH_03')
 ;
 
+INSERT INTO request
+    (request_value, request_description)
+VALUES
+    (0, 'Assistance'),
+    (1, 'Emergency')
+;
+
+INSERT INTO rating
+    (rating_value, rating_description)
+VALUES
+    (0, 'Terrible'),
+    (1, 'Bad'),
+    (2, 'Neutral'),
+    (3, 'Good'),
+    (4, 'Amazing')
+;
+
 
 -- DQL
 CREATE VIEW exhibition_master AS (
