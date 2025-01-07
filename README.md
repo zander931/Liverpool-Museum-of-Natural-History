@@ -5,7 +5,7 @@
 ## Files:
 
 * **extract.py**: connects to an S3 and downloads relevant files
-* **database_setup.py**: creates required database tables and seeds them with initial data
+* **schema.sql**: creates required database tables and seeds them with initial data
 * **pipeline.py**: downloads kiosk data from S3 and uploads it to the database
 * **kiosk_analysis.ipynb**: connects to, and explores the database
 
@@ -15,6 +15,12 @@ The data for the LMNH includes kiosk output .csv files (lmnh_hist_data_X.csv),
 As well as details of specific exhibits within .json files (lmnh_exhibition_XXXXX.json).
 
 The extract.py file handles the combination of multiple sources of kiosk data.
+
+## Database Model
+
+![Museum ERD](museum_erd.png)
+
+Above is the Entity Relationship Diagram for the museum database schema.
 
 ### Ratings
 
