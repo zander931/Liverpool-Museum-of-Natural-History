@@ -18,7 +18,7 @@ The extract.py file handles the combination of multiple sources of kiosk data.
 
 ## Database Model
 
-![Museum ERD](museum_erd.png)
+![Museum ERD](https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/museum_erd.png?raw=true)
 
 Above is the Entity Relationship Diagram for the museum database schema.
 
