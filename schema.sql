@@ -1,3 +1,5 @@
+
+-- DDL
 DROP TABLE IF EXISTS exhibition;
 DROP TABLE IF EXISTS request_interaction;
 DROP TABLE IF EXISTS rating_interaction;
@@ -63,6 +65,7 @@ CREATE TABLE rating_interaction (
 );
 
 
+-- DML
 INSERT INTO department 
     (department_name)
 VALUES
@@ -127,3 +130,19 @@ VALUES
     '2019-07-01',
     'EXH_03')
 ;
+
+
+-- DQL
+CREATE VIEW exhibition_master AS (
+    SELECT 
+        exhibition_id "PRIVATE KEY",
+        public_id "Exhibition ID",
+        exhibition_name "Exhibition Name",
+        exhibition_description "Exhibition Description", 
+        d.department_name "Department", 
+        f.floor_name "Floor", 
+        exhibition_start_date "Start Date"
+    FROM exhibition 
+    JOIN department d USING(department_id) 
+    JOIN floor f USING(floor_id)
+);
