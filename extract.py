@@ -5,7 +5,6 @@ from os import environ as ENV
 import re
 import csv
 from boto3 import client
-from dotenv import load_dotenv
 
 
 def connect_to_s3():
