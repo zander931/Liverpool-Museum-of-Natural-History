@@ -3,34 +3,36 @@
 import logging
 import os
 from os import environ as ENV
-from dotenv import load_dotenv
 import csv
+from dotenv import load_dotenv
 
 from logger_config import setup_logging
 from extract import connect_to_s3, list_objects, download_objects, check_objects, combine_csv
-from transform import get_db_connection, get_exhibition_mapping_dict, get_request_mapping_dict, get_rating_mapping_dict, format_request_data_for_insertion, format_rating_data_for_insertion
+from transform import (get_db_connection, get_exhibition_mapping_dict,
+                       get_request_mapping_dict, get_rating_mapping_dict,
+                       format_request_data_for_insertion, format_rating_data_for_insertion)
 from load import upload_request_data, upload_rating_data
 
 
-def load_csv(kiosk_data: str) -> tuple[list[dict], list[dict]]:
-    """Loads the kiosk data into two separate lists based on 'type'."""
-    requests = []
-    ratings = []
-    with open(f"static_data/{kiosk_data}", 'r', encoding='utf-8') as f:
+def load_csv(data: str) -> tuple[list[dict], list[dict]]:
+    """Loads the data into two separate lists based on 'type'."""
+    req = []
+    rat = []
+    with open(f"static_data/{data}", 'r', encoding='utf-8') as f:
         for row in csv.DictReader(f):
             if row.get('type'):
-                requests.append({
+                req.append({
                     "site": int(row["site"]),
                     "type": int(float(row["type"])),
                     "at": row["at"]
                 })
             else:
-                ratings.append({
+                rat.append({
                     "site": int(row["site"]),
                     "val": int(row["val"]),
                     "at": row["at"]
                 })
-        return requests, ratings
+        return req, rat
 
 
 if __name__ == '__main__':
@@ -38,7 +40,7 @@ if __name__ == '__main__':
     # Configuration
     setup_logging()
     load_dotenv()
-    kiosk_data = 'lmnh_hist_data_full.csv'
+    KIOSK_DATA = 'lmnh_hist_data_full.csv'
 
     # Connect to s3 bucket, check relevant files and download
     s3 = connect_to_s3()
@@ -47,8 +49,8 @@ if __name__ == '__main__':
     download_objects(s3, ENV['MUSEUM_BUCKET'], new_contents)
 
     # Combine .csv kiosk data and separate into requests + ratings
-    combine_csv(new_contents, kiosk_data)
-    [requests, ratings] = load_csv(kiosk_data)
+    combine_csv(new_contents, KIOSK_DATA)
+    [requests, ratings] = load_csv(KIOSK_DATA)
 
     # Establish a connection to the database
     db_conn = get_db_connection()
@@ -73,5 +75,5 @@ if __name__ == '__main__':
     logging.info("Upload to database complete.")
 
     # Deleting .csv file
-    os.remove(f"static_data/{kiosk_data}")
+    os.remove(f"static_data/{KIOSK_DATA}")
     logging.warning("Deleted kiosk file to prevent duplicated entries.")
