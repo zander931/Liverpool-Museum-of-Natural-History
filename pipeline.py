@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     # Configuration
     args = parse_args()
-    setup_logging(args.log_output)
+    output = args.log_output
+    setup_logging(output)
     load_dotenv()
     KIOSK_DATA = 'lmnh_hist_data_full.csv'
 

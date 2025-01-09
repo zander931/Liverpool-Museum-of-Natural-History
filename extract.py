@@ -64,6 +64,3 @@ def combine_csv(contents: list[str], output_file: str):
 
     logging.info(
         "CSV files combined successfully: static_data/%s", output_file)
-
-
-setup_logging()
