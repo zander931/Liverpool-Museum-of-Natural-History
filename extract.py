@@ -2,15 +2,19 @@
 
 import os
 from os import environ as ENV
+import logging
 import re
 import csv
 from boto3 import client
 
+from logger_config import setup_logging
+
 
 def connect_to_s3():
     """Connects to S3."""
-    return client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                  aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    s3 = client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
+                aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    logging.info("Successfully connected to s3 bucket.")
 
 
 def list_objects(s3_client, bucket_name: str) -> list[str]:
@@ -23,6 +27,7 @@ def download_objects(s3_client, bucket_name: str, objects: list[str]):
     """Downloads objects from a bucket."""
     for o in objects:
         s3_client.download_file(bucket_name, o, f"static_data/{o}")
+        logging.info(f"Downloaded file from s3 bucket: {o}")
 
 
 def check_objects(objects: list[str]) -> bool:
@@ -54,6 +59,10 @@ def combine_csv(contents: list[str], output_file: str):
                     for row in csv_reader:
                         writer.writerow(row)
                 os.remove(f"static_data/{file}")
-                print(f"Deleted local file: {f"static_data/{file}"}")
+                logging.info(f"Deleted local file: {f"static_data/{file}"}")
 
-    print(f"CSV files combined successfully: {f"static_data/{output_file}"}")
+    logging.info(f"CSV files combined successfully: {
+                 f"static_data/{output_file}"}")
+
+
+setup_logging()
