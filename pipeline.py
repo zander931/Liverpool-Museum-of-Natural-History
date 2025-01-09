@@ -71,7 +71,3 @@ if __name__ == '__main__':
     upload_request_data(requests, db_conn)
     upload_rating_data(ratings, db_conn)
     logging.info("Upload to database complete.")
-
-    # Deleting .csv file
-    os.remove(f"static_data/{KIOSK_DATA}")
-    logging.warning("Deleted kiosk file to prevent duplicated entries.")
