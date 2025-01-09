@@ -150,7 +150,7 @@ VALUES
 
 
 -- DQL
-CREATE VIEW exhibition_master AS (
+CREATE VIEW exhibition_info AS (
     SELECT 
         exhibition_id "PRIVATE KEY",
         public_id "Exhibition ID",
@@ -162,4 +162,28 @@ CREATE VIEW exhibition_master AS (
     FROM exhibition 
     JOIN department d USING(department_id) 
     JOIN floor f USING(floor_id)
+);
+
+CREATE VIEW request_info AS (
+    SELECT 
+        e.public_id, 
+        r.request_value, 
+        r.request_description, 
+        event_at 
+    FROM request_interaction 
+    JOIN request r USING(request_id)
+    JOIN exhibition e USING(exhibition_id) 
+    ORDER BY event_at
+);
+
+CREATE VIEW rating_info AS (
+    SELECT 
+        e.public_id, 
+        r.rating_value, 
+        r.rating_description, 
+        event_at 
+    FROM rating_interaction 
+    JOIN rating r USING(rating_id)
+    JOIN exhibition e USING(exhibition_id) 
+    ORDER BY event_at
 );
