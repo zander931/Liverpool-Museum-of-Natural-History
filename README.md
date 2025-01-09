@@ -48,3 +48,7 @@ The process is centrally controlled via the _pipeline.py_ script. The following 
 ```bash
 python pipeline --help
 ```
+
+### .env file requirements
+
+An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database.
