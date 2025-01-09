@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 import csv
 
 from extract import connect_to_s3, list_objects, download_objects, check_objects, combine_csv
-from db_functions import get_db_connection, get_exhibition_mapping_dict, get_request_mapping_dict, get_rating_mapping_dict, format_request_data_for_insertion, format_rating_data_for_insertion, upload_request_data, upload_rating_data
+from transform import get_db_connection, get_exhibition_mapping_dict, get_request_mapping_dict, get_rating_mapping_dict, format_request_data_for_insertion, format_rating_data_for_insertion
+from load import upload_request_data, upload_rating_data
 
 
 def load_csv(kiosk_data: str) -> tuple[list[dict], list[dict]]:

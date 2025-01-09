@@ -9,9 +9,8 @@ from boto3 import client
 
 def connect_to_s3():
     """Connects to S3."""
-    s3 = client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
-    return s3
+    return client("s3", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
+                  aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
 
 
 def list_objects(s3_client, bucket_name: str) -> list[str]:
@@ -22,7 +21,6 @@ def list_objects(s3_client, bucket_name: str) -> list[str]:
 
 def download_objects(s3_client, bucket_name: str, objects: list[str]):
     """Downloads objects from a bucket."""
-
     for o in objects:
         s3_client.download_file(bucket_name, o, f"static_data/{o}")
 
