@@ -4,3 +4,4 @@ psycopg2-binary
 pytest
 pylint
 logging
+argparse

@@ -2,8 +2,7 @@
 
 import logging
 import os
-from os import environ as ENV
-import csv
+import argparse
 from dotenv import load_dotenv
 
 from logger_config import setup_logging
@@ -11,46 +10,45 @@ from extract import connect_to_s3, list_objects, download_objects, check_objects
 from transform import (get_db_connection, get_exhibition_mapping_dict,
                        get_request_mapping_dict, get_rating_mapping_dict,
                        format_request_data_for_insertion, format_rating_data_for_insertion)
-from load import upload_request_data, upload_rating_data
+from load import load_data, upload_request_data, upload_rating_data
 
 
-def load_csv(data: str) -> tuple[list[dict], list[dict]]:
-    """Loads the data into two separate lists based on 'type'."""
-    req = []
-    rat = []
-    with open(f"static_data/{data}", 'r', encoding='utf-8') as f:
-        for row in csv.DictReader(f):
-            if row.get('type'):
-                req.append({
-                    "site": int(row["site"]),
-                    "type": int(float(row["type"])),
-                    "at": row["at"]
-                })
-            else:
-                rat.append({
-                    "site": int(row["site"]),
-                    "val": int(row["val"]),
-                    "at": row["at"]
-                })
-        return req, rat
+def parse_args():
+    """Command line arguments to modify the pipeline."""
+    parser = argparse.ArgumentParser(description="Museum ETL Pipeline")
+    parser.add_argument("-b", "--bucket",
+                        type=str, default="sigma-resources-museum",
+                        help="Set the AWS S3 bucket name for where the data is stored. (default=sigma-resources-museum)"
+                        )
+    parser.add_argument("-n", "--num_rows",
+                        type=int, default=None,
+                        help="Number of rows (int) to be uploaded to the database (default=all)"
+                        )
+    parser.add_argument("-l", "--log_output",
+                        type=str, choices=["file", "console"],
+                        default="console",
+                        help="Specify where to log output: 'file' or 'console' (default='console')"
+                        )
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
 
     # Configuration
-    setup_logging()
+    args = parse_args()
+    setup_logging(args.log_output)
     load_dotenv()
     KIOSK_DATA = 'lmnh_hist_data_full.csv'
 
     # Connect to s3 bucket, check relevant files and download
     s3 = connect_to_s3()
-    contents = list_objects(s3, ENV['MUSEUM_BUCKET'])
+    contents = list_objects(s3, args.bucket)
     new_contents = check_objects(contents)
-    download_objects(s3, ENV['MUSEUM_BUCKET'], new_contents)
+    download_objects(s3, args.bucket, new_contents)
 
     # Combine .csv kiosk data and separate into requests + ratings
     combine_csv(new_contents, KIOSK_DATA)
-    [requests, ratings] = load_csv(KIOSK_DATA)
+    [requests, ratings] = load_data(KIOSK_DATA, args.num_rows)
 
     # Establish a connection to the database
     db_conn = get_db_connection()
