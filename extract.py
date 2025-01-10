@@ -7,8 +7,6 @@ import re
 import csv
 from boto3 import client
 
-from logger_config import setup_logging
-
 
 def connect_to_s3():
     """Connects to S3."""
