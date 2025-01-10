@@ -52,3 +52,12 @@ python pipeline --help
 ### .env file requirements
 
 An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database.
+
+#### Database Views
+
+Some views have been pre-instantiated for ease of querying the database. These views include:
+ - **exhibition_info**  
+ - **request_info**  
+ - **rating_info**  
+
+ You can view these views within the schema.sql file.

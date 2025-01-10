@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     # Establish a connection to the database
     db_conn = get_db_connection()
-    logging.info("Established connection with database.")
+    logging.info("Established connection with RDS.")
 
     # Access the seeded data primary key IDs to simplify upload
     exhibit_mapping = get_exhibition_mapping_dict(db_conn)
@@ -71,3 +71,4 @@ if __name__ == '__main__':
     upload_request_data(requests, db_conn)
     upload_rating_data(ratings, db_conn)
     logging.info("Upload to database complete.")
+    db_conn.close()

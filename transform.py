@@ -8,8 +8,14 @@ from psycopg2.extras import RealDictCursor
 
 def get_db_connection() -> connection:
     """Returns a live connection to the database."""
-    return connect(database=ENV['DB_NAME'],
-                   cursor_factory=RealDictCursor)
+    return connect(
+        host=ENV['DB_HOST'],
+        port=ENV['DB_PORT'],
+        user=ENV['DB_USER'],
+        password=ENV['DB_PASS'],
+        database=ENV['DB_NAME'],
+        cursor_factory=RealDictCursor
+    )
 
 
 def get_exhibition_mapping_dict(conn: connection) -> dict:
