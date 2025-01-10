@@ -1,7 +1,6 @@
 """Bulk inserts the kiosk output data into the database."""
 
 import logging
-import os
 import argparse
 from dotenv import load_dotenv
 
