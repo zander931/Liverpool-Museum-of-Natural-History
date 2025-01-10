@@ -10,7 +10,7 @@ A database is set up to hold this data, whilst ensuring scalability with new dat
 * **transform.py**: Functions to transform the data prior to uploading
 * **load.py**: Functions to load csv data, and upload transformed data
 * **pipeline.py**: Manages the ETL process from extraction to uploading to the database
-* **kiosk_analysis.ipynb**: connects to, and explores the database for analysis
+* **analysis.ipynb**: connects to, and explores the database for data analysis on the kiosk and exhibition data
 
 ## Data
 
