@@ -1,0 +1,5 @@
+.DS_Store
+.env
+__pycache__/
+static_data/
+terraform_files/
