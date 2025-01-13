@@ -30,6 +30,9 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                             val = json.loads(msg.value().decode()).get('val')
                             logging.debug("Data retrieved.")
 
+                            if at is None:
+                                logging.error(
+                                    "No timestamp at offset '{0}'".format(msg.offset()))
                             if val is None:
                                 logging.error(
                                     "Mechanical error at offset '{0}'".format(msg.offset()))
@@ -79,7 +82,7 @@ if __name__ == '__main__':
         'sasl.mechanisms': ENV['SASL_MECHANISM'],
         'sasl.username': ENV['USERNAME'],
         'sasl.password': ENV['PASSWORD'],
-        'group.id': 'zander-cg6',
+        'group.id': 'zander-cg7',
         'auto.offset.reset': 'earliest'
     }
 
