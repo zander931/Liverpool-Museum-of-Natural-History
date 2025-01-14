@@ -10,6 +10,10 @@ from dotenv import load_dotenv
 from confluent_kafka import Consumer, KafkaException
 
 from logger_config import setup_logging
+from transform import (get_db_connection, get_exhibition_mapping_dict,
+                       get_request_mapping_dict, get_rating_mapping_dict,
+                       format_request_data_for_insertion, format_rating_data_for_insertion)
+from load import upload_request_data, upload_rating_data
 
 
 def parse_args():
@@ -24,12 +28,14 @@ def parse_args():
     return parser.parse_args()
 
 
-def consume_messages(cons: Consumer, messages_consumed=0) -> None:
+def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], list[dict]]:
     """Processes Kafka messages."""
 
     expected_vals = [-1, 0, 1, 2, 3, 4]  # list[int]
-    expected_types = ['-1', '0']  # list[str]
+    expected_types = [1, 0]  # list[str]
     expected_sites = ['0', '1', '2', '3', '4', '5']  # list[str]
+    req = []
+    rat = []
 
     try:
         while messages_consumed < MAX_MESSAGES:
@@ -40,7 +46,6 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                         "There is an error at offset '{0}': {1}".format(msg.offset(), msg.value()))
                     raise KafkaException(msg.error())
                 else:
-                    messages_consumed += 1
                     if messages_consumed % log_frequency == 0:
                         try:
                             msg_data = json.loads(msg.value().decode())
@@ -54,6 +59,7 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                                     "Missing data at offset '{0}': {1}".format(msg.offset(), msg.value()))
                                 continue
                             else:
+                                messages_consumed += 1
                                 at = datetime.fromisoformat(at_iso)
                                 if not isinstance(val, int):
                                     if val.isdigit():
@@ -74,9 +80,13 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                                 else:
                                     logging.info("Message {0} REQUEST: at={1}, site={2}, type={3}".format(
                                         messages_consumed, at, site, type_val))
+                                    req.append(
+                                        {"at": at, "site": int(site), "type": int(type_val)})
                             else:
                                 logging.info("Message {0} RATING: at={1}, site={2}, val={3}".format(
                                     messages_consumed, at, site, val))
+                                rat.append(
+                                    {"at": at, "site": int(site), "val": val})
 
                         except json.JSONDecodeError as e:
                             logging.error(f"Error decoding JSON at offset {
@@ -96,16 +106,18 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
     finally:
         cons.close()
 
+    return req, rat
+
 
 if __name__ == '__main__':
 
-    MAX_MESSAGES = 100000
+    MAX_MESSAGES = 17000
     messages_consumed = 0
     log_frequency = 1
 
     load_dotenv()
     args = parse_args()
-    setup_logging(args.log_output, filename='kafka_stream.log', level=10)
+    setup_logging(args.log_output, filename='kafka_stream.txt', level=10)
 
     kafka_config = {
         'bootstrap.servers': ENV['BOOTSTRAP_SERVERS'],
@@ -113,11 +125,38 @@ if __name__ == '__main__':
         'sasl.mechanisms': ENV['SASL_MECHANISM'],
         'sasl.username': ENV['USERNAME'],
         'sasl.password': ENV['PASSWORD'],
-        'group.id': 'zander-2',
+        'group.id': 'zander_upload_attempt7',
         'auto.offset.reset': 'earliest'
     }
 
     consumer = Consumer(kafka_config)
     logging.debug("Subscribing to topic: {0}".format(ENV["TOPIC"]))
     consumer.subscribe([ENV["TOPIC"]])
-    consume_messages(consumer)
+
+    # Load in the kafka stream and extract valid data
+    [requests, ratings] = consume_messages(consumer)
+    logging.debug("Request count: {0}".format(len(requests)))
+    logging.debug("Rating count: {0}".format(len(ratings)))
+
+    # Establish a connection to the database
+    db_conn = get_db_connection()
+    logging.debug("Established connection with the database.")
+
+    # Access the seeded data primary key IDs to simplify upload
+    exhibit_mapping = get_exhibition_mapping_dict(db_conn)
+    request_mapping = get_request_mapping_dict(db_conn)
+    rating_mapping = get_rating_mapping_dict(db_conn)
+    logging.debug("Key mappings successfully pulled.")
+
+    # Process the data for insertion
+    requests = format_request_data_for_insertion(
+        requests, exhibit_mapping, request_mapping)
+    ratings = format_rating_data_for_insertion(
+        ratings, exhibit_mapping, rating_mapping)
+    logging.debug("Stream data transformed for insertion.")
+
+    # Upload the formatted data
+    upload_request_data(requests, db_conn)
+    upload_rating_data(ratings, db_conn)
+    logging.debug("Upload to database complete")
+    db_conn.close()

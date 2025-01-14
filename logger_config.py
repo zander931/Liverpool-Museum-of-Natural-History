@@ -17,7 +17,7 @@ def setup_logging(output: str, filename="museum_etl.log", level=20):
             style="{",
             datefmt=log_datefmt
         )
-        logging.info("Logging to file: museum_etl.log")
+        logging.info(f"Logging to file: {filename}")
     else:
         logging.basicConfig(
             level=level,
