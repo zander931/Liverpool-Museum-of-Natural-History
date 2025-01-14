@@ -12,11 +12,11 @@ from logger_config import setup_logging
 
 def consume_messages(cons: Consumer, messages_consumed=0) -> None:
     """Processes Kafka messages."""
+    expected_vals = [-1, 0, 1, 2, 3, 4]  # list[int]
+    expected_types = ['-1', '0']  # list[str]
     try:
         while messages_consumed < MAX_MESSAGES:
             msg = cons.poll(1.0)
-            if msg is None:
-                logging.debug("No new message received within the timeout.")
             if msg:
                 if msg.error():
                     logging.debug("There is an error.")
@@ -28,21 +28,20 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                             at = json.loads(msg.value().decode()).get('at')
                             site = json.loads(msg.value().decode()).get('site')
                             val = json.loads(msg.value().decode()).get('val')
-                            logging.debug("Data retrieved.")
 
-                            if at is None:
-                                logging.error(
-                                    "No timestamp at offset '{0}'".format(msg.offset()))
-                            if val is None:
+                            if (at is None) or (val is None):
                                 logging.error(
                                     "Mechanical error at offset '{0}'".format(msg.offset()))
                             elif not isinstance(val, int):
                                 if not val.isdigit():
                                     logging.debug("Missing data in event.")
+                                elif int(val) not in expected_vals:
+                                    logging.error(
+                                        "Invalid value at offset '{0}'".format(msg.offset()))
                             elif int(val) == -1:
                                 type = json.loads(
                                     msg.value().decode()).get('type', None)
-                                if type is None:
+                                if type not in expected_types:
                                     logging.error(
                                         "Mechanical error at offset '{0}'".format(msg.offset()))
                                 else:
