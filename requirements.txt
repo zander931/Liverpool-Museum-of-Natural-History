@@ -6,3 +6,4 @@ pylint
 logging
 argparse
 confluent_kafka
+datetime
