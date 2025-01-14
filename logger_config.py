@@ -3,13 +3,13 @@
 import logging
 
 
-def setup_logging(output: str, level=20):
+def setup_logging(output: str, filename="museum_etl.log", level=20):
     """Setup the basicConfig."""
     log_format = "{asctime} - {levelname} - {message}"
     log_datefmt = "%Y-%m-%d %H:%M"
     if output == "file":
         logging.basicConfig(
-            filename="museum_etl.log",
+            filename=filename,
             encoding="utf-8",
             filemode="a",
             level=level,

@@ -3,12 +3,25 @@
 from os import environ as ENV
 import json
 import logging
+import argparse
 from datetime import datetime
 
 from dotenv import load_dotenv
 from confluent_kafka import Consumer, KafkaException
 
 from logger_config import setup_logging
+
+
+def parse_args():
+    """Command line arguments to modify the pipeline."""
+    parser = argparse.ArgumentParser(
+        description="Museum kiosk stream consumer.")
+    parser.add_argument("-l", "--log_output",
+                        type=str, choices=["file", "console"],
+                        default="console",
+                        help="Specify where to log output: 'file' or 'console' (default='console')"
+                        )
+    return parser.parse_args()
 
 
 def consume_messages(cons: Consumer, messages_consumed=0) -> None:
@@ -24,7 +37,7 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
             if msg:
                 if msg.error():
                     logging.debug(
-                        "There is an error at offset '{0}'".format(msg.offset()))
+                        "There is an error at offset '{0}': {1}".format(msg.offset(), msg.value()))
                     raise KafkaException(msg.error())
                 else:
                     messages_consumed += 1
@@ -38,7 +51,7 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
 
                             if (at_iso is None) or (site is None) or (val is None):
                                 logging.error(
-                                    "Missing data at offset '{0}'".format(msg.offset()))
+                                    "Missing data at offset '{0}': {1}".format(msg.offset(), msg.value()))
                                 continue
                             else:
                                 at = datetime.fromisoformat(at_iso)
@@ -47,17 +60,17 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
                                         val = int(val)
                                     else:
                                         logging.error(
-                                            "Missing or invalid data at offset '{0}'".format(msg.offset()))
+                                            "Missing or invalid data at offset '{0}': {1}".format(msg.offset(), msg.value()))
                             if site not in expected_sites:
                                 logging.error(
-                                    "Invalid value at offset '{0}'".format(msg.offset()))
+                                    "Invalid value at offset '{0}': {1}".format(msg.offset(), msg.value()))
                             elif val not in expected_vals:
                                 logging.error(
-                                    "Invalid value at offset '{0}'".format(msg.offset()))
+                                    "Invalid value at offset '{0}': {1}".format(msg.offset(), msg.value()))
                             elif val == -1:
                                 if type_val not in expected_types:
                                     logging.error(
-                                        "Mechanical error at offset '{0}'".format(msg.offset()))
+                                        "Mechanical error at offset '{0}': {1}".format(msg.offset(), msg.value()))
                                 else:
                                     logging.info("Message {0} REQUEST: at={1}, site={2}, type={3}".format(
                                         messages_consumed, at, site, type_val))
@@ -88,10 +101,11 @@ if __name__ == '__main__':
 
     MAX_MESSAGES = 100000
     messages_consumed = 0
-    log_frequency = 20
+    log_frequency = 1
 
     load_dotenv()
-    setup_logging('console', level=10)
+    args = parse_args()
+    setup_logging(args.log_output, filename='kafka_stream.log', level=10)
 
     kafka_config = {
         'bootstrap.servers': ENV['BOOTSTRAP_SERVERS'],
@@ -99,7 +113,7 @@ if __name__ == '__main__':
         'sasl.mechanisms': ENV['SASL_MECHANISM'],
         'sasl.username': ENV['USERNAME'],
         'sasl.password': ENV['PASSWORD'],
-        'group.id': 'zander-cg',
+        'group.id': 'zander-2',
         'auto.offset.reset': 'earliest'
     }
 
