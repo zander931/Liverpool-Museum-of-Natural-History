@@ -49,11 +49,11 @@ The process is centrally controlled via the _pipeline.py_ script. The following 
 python pipeline --help
 ```
 
-Connecting to the remote database should be simple with a '.env' file, containing sensitive login credentials for the Amazon RDS.  
+**Connecting** to the remote database should be simple with a '.env' file, containing sensitive login credentials for the Amazon RDS.  
 ```bash
 bash connect.sh
 ```
-Similarly, resetting the database is as simple as running the command below:
+Similarly, **resetting** the database is as simple as running the command below:
 ```bash
 bash reset.sh schema.sql
 ```
