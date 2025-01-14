@@ -21,8 +21,6 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> None:
     try:
         while messages_consumed < MAX_MESSAGES:
             msg = cons.poll(1.0)
-            if messages_consumed == 0:
-                print(msg.offset())
             if msg:
                 if msg.error():
                     logging.debug(

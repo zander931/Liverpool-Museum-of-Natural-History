@@ -49,6 +49,15 @@ The process is centrally controlled via the _pipeline.py_ script. The following 
 python pipeline --help
 ```
 
+Connecting to the remote database should be simple with a '.env' file, containing sensitive login credentials for the Amazon RDS.  
+```bash
+bash connect.sh
+```
+Similarly, resetting the database is as simple as running the command below:
+```bash
+bash reset.sh schema.sql
+```
+
 ### .env file requirements
 
 An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database.
