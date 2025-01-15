@@ -16,8 +16,16 @@ from transform import (get_db_connection, get_exhibition_mapping_dict,
 from load import upload_request_data, upload_rating_data
 
 
+MAX_MESSAGES = 20000
+LOG_FREQUENCY = 1
+EXPECTED_VALS = [-1, 0, 1, 2, 3, 4]
+EXPECTED_TYPES = [1, 0]
+EXPECTED_SITES = ['0', '1', '2', '3', '4', '5']
+
+
 def parse_args():
     """Command line arguments to modify the pipeline."""
+
     parser = argparse.ArgumentParser(
         description="Museum kiosk stream consumer.")
     parser.add_argument("-l", "--log_output",
@@ -28,12 +36,52 @@ def parse_args():
     return parser.parse_args()
 
 
-def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], list[dict]]:
-    """Processes Kafka messages."""
+def process_message(msg, msg_count: int):
+    """Process the data sent in the message."""
 
-    expected_vals = [-1, 0, 1, 2, 3, 4]  # list[int]
-    expected_types = [1, 0]  # list[str]
-    expected_sites = ['0', '1', '2', '3', '4', '5']  # list[str]
+    msg_data = json.loads(msg.value().decode())
+    at_iso = msg_data.get('at')
+    site = msg_data.get('site')
+    val = msg_data.get('val')
+    type_val = msg_data.get('type', None)
+
+    if (at_iso is None) or (site is None) or (val is None):
+        logging.error("Missing data at offset '%d': %s",
+                      msg.offset(), msg.value())
+        return False, False
+
+    at = datetime.fromisoformat(at_iso)
+    if not isinstance(val, int):
+        if val.isdigit():
+            val = int(val)
+        else:
+            logging.error("Missing or invalid data at offset '%d': %s",
+                          msg.offset(), msg.value())
+            return False, False
+
+    if (site not in EXPECTED_SITES) or (val not in EXPECTED_VALS):
+        logging.error("Invalid value at offset '%d': %s",
+                      msg.offset(), msg.value())
+        return False, False
+
+    if val == -1:
+        if type_val not in EXPECTED_TYPES:
+            logging.error("Mechanical error at offset '%d': %s",
+                          msg.offset(), msg.value())
+            return False, False
+
+        logging.info("Message %d REQUEST: at=%s, site=%s, type=%s",
+                     msg_count, at, site, type_val)
+        return {"at": at, "site": int(site), "type": int(type_val)}, val
+
+    logging.info("Message %d RATING: at=%s, site=%s, val=%d",
+                 msg_count, at, site, val)
+    return {"at": at, "site": int(site), "val": val}, 1
+
+
+def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], list[dict]]:
+    """Consumes the Kafka message stream."""
+
     req = []
     rat = []
 
@@ -43,65 +91,40 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], l
             if msg:
                 if msg.error():
                     logging.debug(
-                        "There is an error at offset '{0}': {1}".format(msg.offset(), msg.value()))
+                        "There is an error at offset '%d': %s",
+                        msg.offset(), msg.value())
                     raise KafkaException(msg.error())
-                else:
-                    if messages_consumed % log_frequency == 0:
-                        try:
-                            msg_data = json.loads(msg.value().decode())
-                            at_iso = msg_data.get('at')
-                            site = msg_data.get('site')
-                            val = msg_data.get('val')
-                            type_val = msg_data.get('type', None)
-
-                            if (at_iso is None) or (site is None) or (val is None):
-                                logging.error(
-                                    "Missing data at offset '{0}': {1}".format(msg.offset(), msg.value()))
-                                continue
-                            else:
-                                messages_consumed += 1
-                                at = datetime.fromisoformat(at_iso)
-                                if not isinstance(val, int):
-                                    if val.isdigit():
-                                        val = int(val)
-                                    else:
-                                        logging.error(
-                                            "Missing or invalid data at offset '{0}': {1}".format(msg.offset(), msg.value()))
-                            if site not in expected_sites:
-                                logging.error(
-                                    "Invalid value at offset '{0}': {1}".format(msg.offset(), msg.value()))
-                            elif val not in expected_vals:
-                                logging.error(
-                                    "Invalid value at offset '{0}': {1}".format(msg.offset(), msg.value()))
-                            elif val == -1:
-                                if type_val not in expected_types:
-                                    logging.error(
-                                        "Mechanical error at offset '{0}': {1}".format(msg.offset(), msg.value()))
-                                else:
-                                    logging.info("Message {0} REQUEST: at={1}, site={2}, type={3}".format(
-                                        messages_consumed, at, site, type_val))
-                                    req.append(
-                                        {"at": at, "site": int(site), "type": int(type_val)})
-                            else:
-                                logging.info("Message {0} RATING: at={1}, site={2}, val={3}".format(
-                                    messages_consumed, at, site, val))
-                                rat.append(
-                                    {"at": at, "site": int(site), "val": val})
-
-                        except json.JSONDecodeError as e:
-                            logging.error(f"Error decoding JSON at offset {
-                                          msg.offset()}: {e}")
+                if messages_consumed % LOG_FREQUENCY == 0:
+                    try:
+                        if not msg.value():
+                            logging.error("Message value is empty at offset '%d'",
+                                          msg.offset())
                             continue
-                        except AttributeError as e:
-                            logging.debug(f"Unexpected error: {e}")
-                            continue
+
+                        messages_consumed += 1
+                        out, val = process_message(msg, messages_consumed)
+
+                        if out:
+                            if val == -1:
+                                req.append(out)
+                            elif val == 1:
+                                rat.append(out)
+
+                    except json.JSONDecodeError as e:
+                        logging.error("Error decoding JSON at offset '%d': %s",
+                                      msg.offset(), e)
+                        continue
+                    except AttributeError as e:
+                        logging.debug("Unexpected error at offset '%d': %s",
+                                      msg.offset(), e)
+                        continue
 
         logging.info(
-            "Finished consuming {0} messages.".format(messages_consumed))
+            "Finished consuming %d messages.", messages_consumed)
 
     except KeyboardInterrupt:
-        logging.info("Consumer interrupted by user. {0} messages consumed.".format(
-            messages_consumed))
+        logging.info(
+            "Consumer interrupted by user. %d messages consumed.", messages_consumed)
 
     finally:
         cons.close()
@@ -111,10 +134,7 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], l
 
 if __name__ == '__main__':
 
-    MAX_MESSAGES = 17000
-    messages_consumed = 0
-    log_frequency = 1
-
+    # Configuration details for the Consumer
     load_dotenv()
     args = parse_args()
     setup_logging(args.log_output, filename='kafka_stream.txt', level=10)
@@ -125,18 +145,19 @@ if __name__ == '__main__':
         'sasl.mechanisms': ENV['SASL_MECHANISM'],
         'sasl.username': ENV['USERNAME'],
         'sasl.password': ENV['PASSWORD'],
-        'group.id': 'zander_upload_attempt7',
+        'group.id': 'zander_upload_attempt8',
         'auto.offset.reset': 'earliest'
     }
 
+    # Create a consumer instance and subscribe to the topic
     consumer = Consumer(kafka_config)
-    logging.debug("Subscribing to topic: {0}".format(ENV["TOPIC"]))
+    logging.debug("Subscribing to topic: %s", ENV["TOPIC"])
     consumer.subscribe([ENV["TOPIC"]])
 
     # Load in the kafka stream and extract valid data
     [requests, ratings] = consume_messages(consumer)
-    logging.debug("Request count: {0}".format(len(requests)))
-    logging.debug("Rating count: {0}".format(len(ratings)))
+    logging.debug("Request count: %d", len(requests))
+    logging.debug("Rating count: %d", len(ratings))
 
     # Establish a connection to the database
     db_conn = get_db_connection()

@@ -9,7 +9,8 @@ A database is set up to hold this data, whilst ensuring scalability with new dat
 * **extract.py**: Functions to connect to an S3 and download relevant files
 * **transform.py**: Functions to transform the data prior to uploading
 * **load.py**: Functions to load csv data, and upload transformed data
-* **pipeline.py**: Manages the ETL process from extraction to uploading to the database
+* **pipeline.py**: Manages the ETL process from extraction from S3 to uploading to the database
+* **consumer.py**: Manages the ETL process from extraction from Kafka stream to uploading to the database
 * **analysis.ipynb**: connects to, and explores the database for data analysis on the kiosk and exhibition data
 
 ## Data
@@ -60,9 +61,28 @@ bash reset.sh schema.sql
 
 ### .env file requirements
 
-An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database.
+An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database, as well as to the Kafka stream of incoming data.
 
-#### Database Views
+For connecting to the S3 bucket, you will require:
+ - **AWS_ACCESS_KEY**
+ - **AWS_SECRET_ACCESS_KEY**
+
+For connecting to the RDS database, you will require:
+ - **DB_HOST**
+ - **DB_NAME**
+ - **DB_PORT**
+ - **DB_USER**
+ - **DB_PASS**
+
+For connecting to the Kafka stream, you will require:
+ - **BOOTSTRAP_SERVERS**
+ - **SECURITY_PROTOCOL**
+ - **SASL_MECHANISM**
+ - **USERNAME**
+ - **PASSWORD**
+ - **TOPIC**
+
+## Database Views
 
 Some views have been pre-instantiated for ease of querying the database. These views include:
  - **exhibition_info**  
