@@ -65,7 +65,7 @@ Similarly, **resetting** the database is as simple as running the command below:
 bash reset.sh schema.sql
 ```
 
-### .env file requirements
+### `.env` file requirements
 
 An `.env` file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The `.env` file should also hold to configuration details to connect to the database, as well as to the Kafka stream of incoming data.
 
