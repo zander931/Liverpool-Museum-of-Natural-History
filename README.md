@@ -47,7 +47,13 @@ The master data can be modified within the schema data, which is idempotent.
 The process is centrally controlled via the _pipeline.py_ script. The following should display optional options to control the output of the process, including the **s3 bucket name**, the **number of rows** uploaded to the database from the first line of the kiosk csv file data, and finally **where the output should be logged**. 
 
 ```bash
-python3 pipeline --help
+python3 pipeline.py --help
+```
+
+Similarly for data streams, the _consumer.py_ script manages the ETL process, and the optional arguments can be displayed with the command:
+
+```bash
+python3 consumer.py --help
 ```
 
 **Connecting** to the remote database should be simple with a `.env` file, containing sensitive login credentials for the Amazon RDS.  
