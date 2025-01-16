@@ -4,7 +4,7 @@ from os import environ as ENV
 import json
 import logging
 import argparse
-from datetime import datetime
+from datetime import datetime, time
 
 from dotenv import load_dotenv
 from confluent_kafka import Consumer, KafkaException
@@ -16,7 +16,7 @@ from transform import (get_db_connection, get_exhibition_mapping_dict,
 from load import upload_request_data, upload_rating_data
 
 
-MAX_MESSAGES = 20000
+MAX_MESSAGES = 10000
 LOG_FREQUENCY = 1
 EXPECTED_VALS = [-1, 0, 1, 2, 3, 4]
 EXPECTED_TYPES = [1, 0]
@@ -51,6 +51,12 @@ def process_message(msg, msg_count: int):
         return False
 
     at = datetime.fromisoformat(at_iso)
+    start_time = time(8, 45, 0)
+    end_time = time(18, 15, 0)
+    if (at.time() < start_time) or (at.time() > end_time):
+        logging.error("Outside open times at offset '%d': %s",
+                      msg.offset(), msg.value())
+        return False
     if not isinstance(val, int):
         if val.isdigit():
             val = int(val)
