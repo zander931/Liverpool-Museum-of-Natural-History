@@ -48,7 +48,7 @@ def process_message(msg, msg_count: int):
     if (at_iso is None) or (site is None) or (val is None):
         logging.error("Missing data at offset '%d': %s",
                       msg.offset(), msg.value())
-        return False, False
+        return False
 
     at = datetime.fromisoformat(at_iso)
     if not isinstance(val, int):
@@ -57,26 +57,26 @@ def process_message(msg, msg_count: int):
         else:
             logging.error("Missing or invalid data at offset '%d': %s",
                           msg.offset(), msg.value())
-            return False, False
+            return False
 
     if (site not in EXPECTED_SITES) or (val not in EXPECTED_VALS):
         logging.error("Invalid value at offset '%d': %s",
                       msg.offset(), msg.value())
-        return False, False
+        return False
 
     if val == -1:
         if type_val not in EXPECTED_TYPES:
             logging.error("Mechanical error at offset '%d': %s",
                           msg.offset(), msg.value())
-            return False, False
+            return False
 
         logging.info("Message %d REQUEST: at=%s, site=%s, type=%s",
                      msg_count, at, site, type_val)
-        return {"at": at, "site": int(site), "type": int(type_val)}, val
+        return {"at": at, "site": int(site), "type": int(type_val)}
 
     logging.info("Message %d RATING: at=%s, site=%s, val=%d",
                  msg_count, at, site, val)
-    return {"at": at, "site": int(site), "val": val}, 1
+    return {"at": at, "site": int(site), "val": val}
 
 
 def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], list[dict]]:
@@ -102,12 +102,12 @@ def consume_messages(cons: Consumer, messages_consumed=0) -> tuple[list[dict], l
                             continue
 
                         messages_consumed += 1
-                        out, val = process_message(msg, messages_consumed)
+                        out = process_message(msg, messages_consumed)
 
                         if out:
-                            if val == -1:
+                            if out.get("val") is None:
                                 req.append(out)
-                            elif val == 1:
+                            else:
                                 rat.append(out)
 
                     except json.JSONDecodeError as e:
