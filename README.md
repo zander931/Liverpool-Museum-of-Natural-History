@@ -70,23 +70,29 @@ bash reset.sh schema.sql
 An `.env` file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The `.env` file should also hold to configuration details to connect to the database, as well as to the Kafka stream of incoming data.
 
 For connecting to the S3 bucket, you will require:
- - **AWS_ACCESS_KEY=XXXXX**
- - **AWS_SECRET_ACCESS_KEY=XXXXX**
+```bash
+AWS_ACCESS_KEY=XXXXX
+AWS_SECRET_ACCESS_KEY=XXXXX
+```
 
 For connecting to the RDS database, you will require:
- - **DB_HOST=XXXXX**
- - **DB_NAME=XXXXX**
- - **DB_PORT=XXXXX**
- - **DB_USER=XXXXX**
- - **DB_PASS=XXXXX**
+```bash
+DB_HOST=XXXXX
+DB_NAME=XXXXX
+DB_PORT=XXXXX
+DB_USER=XXXXX
+DB_PASS=XXXXX
+```
 
 For connecting to the Kafka stream, you will require:
- - **BOOTSTRAP_SERVERS=XXXXX**
- - **SECURITY_PROTOCOL=XXXXX**
- - **SASL_MECHANISM=XXXXX**
- - **USERNAME=XXXXX**
- - **PASSWORD=XXXXX**
- - **TOPIC=XXXXX**
+```bash
+BOOTSTRAP_SERVERS=XXXXX
+SECURITY_PROTOCOL=XXXXX
+SASL_MECHANISM=XXXXX
+USERNAME=XXXXX
+PASSWORD=XXXXX
+TOPIC=XXXXX
+```
 
 ## Database Views
 
