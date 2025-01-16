@@ -47,10 +47,10 @@ The master data can be modified within the schema data, which is idempotent.
 The process is centrally controlled via the _pipeline.py_ script. The following should display optional options to control the output of the process, including the **s3 bucket name**, the **number of rows** uploaded to the database from the first line of the kiosk csv file data, and finally **where the output should be logged**. 
 
 ```bash
-python pipeline --help
+python3 pipeline --help
 ```
 
-**Connecting** to the remote database should be simple with a '.env' file, containing sensitive login credentials for the Amazon RDS.  
+**Connecting** to the remote database should be simple with a `.env` file, containing sensitive login credentials for the Amazon RDS.  
 ```bash
 bash connect.sh
 ```
@@ -61,26 +61,26 @@ bash reset.sh schema.sql
 
 ### .env file requirements
 
-An .env file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The .env file should also hold to configuration details to connect to the database, as well as to the Kafka stream of incoming data.
+An `.env` file is required to hold sensitive configuration information to connect to the S3 bucket that stores the exhibition and kiosk data. The `.env` file should also hold to configuration details to connect to the database, as well as to the Kafka stream of incoming data.
 
 For connecting to the S3 bucket, you will require:
- - **AWS_ACCESS_KEY**
- - **AWS_SECRET_ACCESS_KEY**
+ - **AWS_ACCESS_KEY=XXXXX**
+ - **AWS_SECRET_ACCESS_KEY=XXXXX**
 
 For connecting to the RDS database, you will require:
- - **DB_HOST**
- - **DB_NAME**
- - **DB_PORT**
- - **DB_USER**
- - **DB_PASS**
+ - **DB_HOST=XXXXX**
+ - **DB_NAME=XXXXX**
+ - **DB_PORT=XXXXX**
+ - **DB_USER=XXXXX**
+ - **DB_PASS=XXXXX**
 
 For connecting to the Kafka stream, you will require:
- - **BOOTSTRAP_SERVERS**
- - **SECURITY_PROTOCOL**
- - **SASL_MECHANISM**
- - **USERNAME**
- - **PASSWORD**
- - **TOPIC**
+ - **BOOTSTRAP_SERVERS=XXXXX**
+ - **SECURITY_PROTOCOL=XXXXX**
+ - **SASL_MECHANISM=XXXXX**
+ - **USERNAME=XXXXX**
+ - **PASSWORD=XXXXX**
+ - **TOPIC=XXXXX**
 
 ## Database Views
 

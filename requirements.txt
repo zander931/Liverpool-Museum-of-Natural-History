@@ -3,7 +3,6 @@ python-dotenv
 psycopg2-binary
 pytest
 pylint
-logging
 argparse
 confluent_kafka
 datetime
