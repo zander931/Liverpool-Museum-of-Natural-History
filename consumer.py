@@ -57,6 +57,7 @@ def process_message(msg, msg_count: int):
         logging.error("Outside open times at offset '%d': %s",
                       msg.offset(), msg.value())
         return False
+
     if not isinstance(val, int):
         if val.isdigit():
             val = int(val)
@@ -151,7 +152,7 @@ if __name__ == '__main__':
         'sasl.mechanisms': ENV['SASL_MECHANISM'],
         'sasl.username': ENV['USERNAME'],
         'sasl.password': ENV['PASSWORD'],
-        'group.id': 'zander_upload_attempt8',
+        'group.id': 'zander_upload_ec2',
         'auto.offset.reset': 'earliest'
     }
 
