@@ -15,10 +15,10 @@ A database is set up to hold this data, whilst ensuring scalability with new dat
 
 ## Data
 
-The data for the LMNH includes kiosk output .csv files (lmnh_hist_data_X.csv),  
-As well as details of specific exhibits within .json files (lmnh_exhibition_XXXXX.json).
+The data for the LMNH includes kiosk output `.csv` files (ie. `lmnh_hist_data_X.csv`),  
+As well as details of specific exhibits within `.json` files (ie. `lmnh_exhibition_XXXXX.json`).
 
-The extract.py file handles the combination of multiple sources of kiosk data.
+The `extract.py` file handles the combination of multiple sources of kiosk data.
 
 The data is transformed to map to the foreign keys (exhibit_id, request_id/rating_id) linked to the kiosk transaction data, hosted within the request_interaction/rating_interaction tables, respective to the type of data.
 
@@ -44,13 +44,13 @@ The master data can be modified within the schema data, which is idempotent.
 
 ## Running the file
 
-The process is centrally controlled via the _pipeline.py_ script. The following should display optional options to control the output of the process, including the **s3 bucket name**, the **number of rows** uploaded to the database from the first line of the kiosk csv file data, and finally **where the output should be logged**. 
+The process is centrally controlled via the _`pipeline.py`_ script. The following should display optional options to control the output of the process, including the **s3 bucket name**, the **number of rows** uploaded to the database from the first line of the kiosk csv file data, and finally **where the output should be logged**. 
 
 ```bash
 python3 pipeline.py --help
 ```
 
-Similarly for data streams, the _consumer.py_ script manages the ETL process, and the optional arguments can be displayed with the command:
+Similarly for data streams, the _`consumer.py`_ script manages the ETL process, and the optional arguments can be displayed with the command:
 
 ```bash
 python3 consumer.py --help
