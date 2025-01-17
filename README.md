@@ -107,16 +107,16 @@ Some views have been pre-instantiated for ease of querying the database. These v
 
 **Wireframe Design of Dashboards**
 
-![Wireframe Design][https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/wireframe_design.png?raw=true]
+![Wireframe Design](https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/wireframe_design.png?raw=true)
 
 Exhibition Performance for Angela Millay (Exhibitions Manager):
 
-![Performance Dashboard Screenshot][https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/performance_dashboard.png?raw=true]
+![Performance Dashboard Screenshot](https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/performance_dashboard.png?raw=true)
 
 Museum Security and Visitor Safety for Rita Pelkman (Head of Security & Visitor Safety):
 
-![Safety Dashboard Screenshot][https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/safety_dashboard.png?raw=true]
+![Safety Dashboard Screenshot](https://github.com/zander931/Liverpool-Museum-of-Natural-History/blob/main/safety_dashboard.png?raw=true)
 
 Average Rating over Time for Top 3 Exhibitions:
 
-![Average Rating over Time][https://raw.githubusercontent.com/zander931/Liverpool-Museum-of-Natural-History/refs/heads/main/avg_rating_exh.png]
+![Average Rating over Time](https://raw.githubusercontent.com/zander931/Liverpool-Museum-of-Natural-History/refs/heads/main/avg_rating_exh.png)
