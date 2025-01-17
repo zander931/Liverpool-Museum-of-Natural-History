@@ -102,3 +102,21 @@ Some views have been pre-instantiated for ease of querying the database. These v
  - **rating_info**  
 
  You can view these views within the schema.sql file.
+
+## Example Dashboards using Tableau
+
+**Wireframe Design of Dashboards**
+
+![Wireframe Design][]
+
+Exhibition Performance for Angela Millay (Exhibitions Manager):
+
+![Performance Dashboard Screenshot][]
+
+Museum Security and Visitor Safety for Rita Pelkman (Head of Security & Visitor Safety):
+
+![Safety Dashboard Screenshot][]
+
+Average Rating over Time for Top 3 Exhibitions:
+
+![Average Rating over Time][]
